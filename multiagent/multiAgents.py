@@ -218,6 +218,44 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
           legal moves.
         """
         "*** YOUR CODE HERE ***"
+
+        def expectimaxRecursion(gameState, index, currentDepth):
+            if gameState.isLose() or gameState.isWin() or currentDepth >= self.depth:
+                return self.evaluationFunction(gameState)
+            if index == 0:
+                value = -float('inf')
+                bestMove = 'Stop'
+                for action in gameState.getLegalActions(index):
+                    if action != 'Stop':
+                        playerGameState = gameState.generateSuccessor(index, action)
+                        newValue = expectimaxRecursion(playerGameState, index + 1, currentDepth)
+                        if value < newValue:
+                            value = newValue
+                            bestMove = action
+                self.bestMove = bestMove
+                return value
+
+            elif index != 0:
+                value = 0.0
+                legalActions = gameState.getLegalActions(index)
+                for action in legalActions:
+                    if action != 'Stop':
+                        ghostGameState = gameState.generateSuccessor(index, action)
+                        resetOrNot = index
+                        nextDepth = currentDepth
+                        if index >= gameState.getNumAgents() - 1:
+                            resetOrNot = 0
+                            nextDepth += 1
+                        else:
+                            resetOrNot = index + 1
+                        newValue = expectimaxRecursion(ghostGameState, resetOrNot, nextDepth)
+                        value = value + ((1.0 / len(legalActions)) * newValue)
+                return value
+
+        expectimaxRecursion(gameState, self.index, 0)
+
+        return self.bestMove
+
         util.raiseNotDefined()
 
 def betterEvaluationFunction(currentGameState):
