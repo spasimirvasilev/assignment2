@@ -126,6 +126,9 @@ class MultiAgentSearchAgent(Agent):
         self.evaluationFunction = util.lookup(evalFn, globals())
         self.depth = int(depth)
 
+        #new stuff
+        self.bestMove = 'Stop'
+
 class MinimaxAgent(MultiAgentSearchAgent):
     """
       Your minimax agent (question 2)
@@ -146,40 +149,49 @@ class MinimaxAgent(MultiAgentSearchAgent):
             Returns the successor game state after an agent takes an action
 
           gameState.getNumAgents():
-            Returns the total number of agents in the game
+            Returns the total number of agents in th
+            e game
         """
         "*** YOUR CODE HERE ***"
 
-        bestMove = 'STOP'
+        def minimaxRecursion(gameState, index, currentDepth):
+            print index
+            print 'depth: ', currentDepth, gameState.getNumAgents()
+            if gameState.isLose() or gameState.isWin() or currentDepth == self.depth*gameState.getNumAgents():
 
-        if gameState.isLose() or gameState.isWin():
-            return 'STOP', self.evaluationFunction(gameState);
+                return self.evaluationFunction(gameState)
 
-        if self.index == 0:
-            value = -float('inf')
-        else:
-            value = float('inf')
+            if index == 0:
+                value = -float('inf')
+                for action in gameState.getLegalActions(index):
+                    if action != 'Stop':
+                        playerGameState = gameState.generateSuccessor(index, action)
+                        newValue = minimaxRecursion(playerGameState, index + 1, currentDepth + 1)
+                        if value < newValue:
+                            value = newValue
+                            self.bestMove = action
+                return value
 
-        for action in gameState.getLegalActions(self.index):
-            if self.index == 0:
-                playerGameState = gameState.generateSuccessor(self.index, action)
-                playerGameState.index += 1
-                direction, newValue = self.getAction(playerGameState)
-                if value < newValue:
-                    value = newValue
-                    bestMove = action
+            elif index != 0:
+                value = float('inf')
+                for action in gameState.getLegalActions(index):
+                    if action != 'Stop':
+                        ghostGameState = gameState.generateSuccessor(index, action)
+                        resetOrNot = index
+                        #nextDepth = currentDepth
+                        if index == gameState.getNumAgents():
+                            resetOrNot = 0
+                            #nextDepth += 1
+                        else:
+                            resetOrNot = index + 1
+                        newValue = minimaxRecursion(ghostGameState, resetOrNot, currentDepth+1)
+                        if value > newValue:
+                            value = newValue
+                return value
 
-            elif self.index != 0:
-                for i in range(gameState.getNumAgents() - 1):
+        minimaxRecursion(gameState, self.index, 0)
 
-                    ghostGameState = gameState.generateSuccessor(i+1, action)
-                    ghostGameState.index = 0
-                    direction, newValue = self.getAction(ghostGameState)
-                    if value > newValue:
-                        value = newValue
-                        bestMove = action
-
-        return bestMove, value
+        return self.bestMove
 
         util.raiseNotDefined()
 
