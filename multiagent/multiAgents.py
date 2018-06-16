@@ -155,21 +155,19 @@ class MinimaxAgent(MultiAgentSearchAgent):
         "*** YOUR CODE HERE ***"
 
         def minimaxRecursion(gameState, index, currentDepth):
-            print index
-            print 'depth: ', currentDepth, gameState.getNumAgents()
-            if gameState.isLose() or gameState.isWin() or currentDepth == self.depth*gameState.getNumAgents():
-
+            if gameState.isLose() or gameState.isWin() or currentDepth >= self.depth:
                 return self.evaluationFunction(gameState)
-
             if index == 0:
                 value = -float('inf')
+                bestMove = 'Stop'
                 for action in gameState.getLegalActions(index):
                     if action != 'Stop':
                         playerGameState = gameState.generateSuccessor(index, action)
-                        newValue = minimaxRecursion(playerGameState, index + 1, currentDepth + 1)
+                        newValue = minimaxRecursion(playerGameState, index + 1, currentDepth)
                         if value < newValue:
                             value = newValue
-                            self.bestMove = action
+                            bestMove = action
+                self.bestMove = bestMove
                 return value
 
             elif index != 0:
@@ -178,13 +176,13 @@ class MinimaxAgent(MultiAgentSearchAgent):
                     if action != 'Stop':
                         ghostGameState = gameState.generateSuccessor(index, action)
                         resetOrNot = index
-                        #nextDepth = currentDepth
-                        if index == gameState.getNumAgents():
+                        nextDepth = currentDepth
+                        if index >= gameState.getNumAgents() - 1:
                             resetOrNot = 0
-                            #nextDepth += 1
+                            nextDepth += 1
                         else:
                             resetOrNot = index + 1
-                        newValue = minimaxRecursion(ghostGameState, resetOrNot, currentDepth+1)
+                        newValue = minimaxRecursion(ghostGameState, resetOrNot, nextDepth)
                         if value > newValue:
                             value = newValue
                 return value
