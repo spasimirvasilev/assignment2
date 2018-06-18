@@ -202,7 +202,7 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
         """
           Returns the minimax action using self.depth and self.evaluationFunction
         """
-        
+
         def ABRecursion(gameState, index, alpha, beta, currentDepth):
             if gameState.isLose() or gameState.isWin() or currentDepth >= self.depth:
                 return self.evaluationFunction(gameState)
@@ -210,43 +210,38 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                 value = float('-inf')
                 bestMove = 'Stop'
                 for action in gameState.getLegalActions(index):
-                    if action != 'Stop':
-                        playerGameState = gameState.generateSuccessor(index, action)
-                        newValue = ABRecursion(playerGameState, index + 1, alpha, beta, currentDepth)
-                        if value < newValue:
-                            value = newValue
-                            bestMove = action
-                        
-                        if value > beta:
-                          return value
-                        alpha = max(alpha, value)
+                    playerGameState = gameState.generateSuccessor(index, action)
+                    newValue = ABRecursion(playerGameState, index + 1, alpha, beta, currentDepth)
+                    if value < newValue:
+                        value = newValue
+                        bestMove = action
+                    if value >= beta:
+                        return value
+                    alpha = max(alpha, value)
                 self.bestMove = bestMove
                 return value
 
             elif index != 0:
                 value = float('inf')
                 for action in gameState.getLegalActions(index):
-                    if action != 'Stop':
-                        ghostGameState = gameState.generateSuccessor(index, action)
-                        resetOrNot = index
-                        nextDepth = currentDepth
-                        if index >= gameState.getNumAgents() - 1:
-                            resetOrNot = 0
-                            nextDepth += 1
+                    ghostGameState = gameState.generateSuccessor(index, action)
+                    resetOrNot = index
+                    nextDepth = currentDepth
+                    if index >= gameState.getNumAgents() - 1:
+                        resetOrNot = 0
+                        nextDepth += 1
+                    else:
+                        resetOrNot = index + 1
+                    newValue = ABRecursion(ghostGameState, resetOrNot, alpha, beta, nextDepth)
+                    if value > newValue:
+                        value = newValue
 
-                        else:
-                            resetOrNot = index + 1
-                        newValue = ABRecursion(ghostGameState, resetOrNot, alpha, beta, nextDepth)
-                        if value > newValue:
-                            value = newValue
-                        
-                        if value <= alpha:
-                            return value
-                        beta = min(beta, value)
+                    if value <= alpha:
+                        return value
+                    beta = min(beta, value)
                 return value
 
         ABRecursion(gameState, 0, float("-inf"), float("inf"), 0)
-
         return self.bestMove
 
 
