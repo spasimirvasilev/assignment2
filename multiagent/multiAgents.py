@@ -161,30 +161,28 @@ class MinimaxAgent(MultiAgentSearchAgent):
                 value = -float('inf')
                 bestMove = 'Stop'
                 for action in gameState.getLegalActions(index):
-                    if action != 'Stop':
-                        playerGameState = gameState.generateSuccessor(index, action)
-                        newValue = minimaxRecursion(playerGameState, index + 1, currentDepth)
-                        if value < newValue:
-                            value = newValue
-                            bestMove = action
+                    playerGameState = gameState.generateSuccessor(index, action)
+                    newValue = minimaxRecursion(playerGameState, index + 1, currentDepth)
+                    if value < newValue:
+                        value = newValue
+                        bestMove = action
                 self.bestMove = bestMove
                 return value
 
             elif index != 0:
                 value = float('inf')
                 for action in gameState.getLegalActions(index):
-                    if action != 'Stop':
-                        ghostGameState = gameState.generateSuccessor(index, action)
-                        resetOrNot = index
-                        nextDepth = currentDepth
-                        if index >= gameState.getNumAgents() - 1:
-                            resetOrNot = 0
-                            nextDepth += 1
-                        else:
-                            resetOrNot = index + 1
-                        newValue = minimaxRecursion(ghostGameState, resetOrNot, nextDepth)
-                        if value > newValue:
-                            value = newValue
+                    ghostGameState = gameState.generateSuccessor(index, action)
+                    resetOrNot = index
+                    nextDepth = currentDepth
+                    if index >= gameState.getNumAgents() - 1:
+                        resetOrNot = 0
+                        nextDepth += 1
+                    else:
+                        resetOrNot = index + 1
+                    newValue = minimaxRecursion(ghostGameState, resetOrNot, nextDepth)
+                    if value > newValue:
+                        value = newValue
                 return value
 
         minimaxRecursion(gameState, self.index, 0)
@@ -266,12 +264,11 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 value = -float('inf')
                 bestMove = 'Stop'
                 for action in gameState.getLegalActions(index):
-                    if action != 'Stop':
-                        playerGameState = gameState.generateSuccessor(index, action)
-                        newValue = expectimaxRecursion(playerGameState, index + 1, currentDepth)
-                        if value < newValue:
-                            value = newValue
-                            bestMove = action
+                    playerGameState = gameState.generateSuccessor(index, action)
+                    newValue = expectimaxRecursion(playerGameState, index + 1, currentDepth)
+                    if value < newValue:
+                        value = newValue
+                        bestMove = action
                 self.bestMove = bestMove
                 return value
 
@@ -279,17 +276,16 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
                 value = 0.0
                 legalActions = gameState.getLegalActions(index)
                 for action in legalActions:
-                    if action != 'Stop':
-                        ghostGameState = gameState.generateSuccessor(index, action)
-                        resetOrNot = index
-                        nextDepth = currentDepth
-                        if index >= gameState.getNumAgents() - 1:
-                            resetOrNot = 0
-                            nextDepth += 1
-                        else:
-                            resetOrNot = index + 1
-                        newValue = expectimaxRecursion(ghostGameState, resetOrNot, nextDepth)
-                        value = value + ((1.0 / len(legalActions)) * newValue)
+                    ghostGameState = gameState.generateSuccessor(index, action)
+                    resetOrNot = index
+                    nextDepth = currentDepth
+                    if index >= gameState.getNumAgents() - 1:
+                        resetOrNot = 0
+                        nextDepth += 1
+                    else:
+                        resetOrNot = index + 1
+                    newValue = expectimaxRecursion(ghostGameState, resetOrNot, nextDepth)
+                    value = value + ((1.0 / len(legalActions)) * newValue)
                 return value
 
         expectimaxRecursion(gameState, self.index, 0)
@@ -324,7 +320,7 @@ def betterEvaluationFunction(currentGameState):
 
     foodPositions = food.asList()
     score = 1.0 / (1.0 + len(foodPositions)) + 1.0 / (1.0 + len(capsules)) + gamescore \
-            + 1.0/(1.0 + (closestGhost/(len(ghostPositions))))
+            + 1.0 / (1.0 + (closestGhost/(len(ghostPositions))))
     return score
 
     util.raiseNotDefined()
