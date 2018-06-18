@@ -90,8 +90,7 @@ class ReflexAgent(Agent):
 
         for food in currentFoodPositions:
             distance = manhattanDistance(food, newPos)
-            if distance < closestFood:
-                closestFood = distance
+            closestFood = min(distance, closestFood)
 
         score = 1.0 / (1 + closestFood)
         return score
@@ -181,8 +180,8 @@ class MinimaxAgent(MultiAgentSearchAgent):
                     else:
                         resetOrNot = index + 1
                     newValue = minimaxRecursion(ghostGameState, resetOrNot, nextDepth)
-                    if value > newValue:
-                        value = newValue
+                    value = min(value, newValue)
+
                 return value
 
         minimaxRecursion(gameState, self.index, 0)
@@ -231,8 +230,8 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
                     else:
                         resetOrNot = index + 1
                     newValue = ABRecursion(ghostGameState, resetOrNot, alpha, beta, nextDepth)
-                    if value > newValue:
-                        value = newValue
+
+                    value = min(value, newValue)
 
                     if value <= alpha:
                         return value
